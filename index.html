@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A letter for you 💌</title>
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Quicksand:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blush: #ffe4ec;
+    --rose: #f78fb3;
+    --hot: #e0558a;
+    --berry: #8e2a54;
+    --lilac: #e8d5f5;
+    --cream: #fff8fa;
+    --gold: #f6c667;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: 'Quicksand', sans-serif;
+    color: var(--berry);
+    background: radial-gradient(circle at 20% 15%, #ffd3e2 0, transparent 45%),
+                radial-gradient(circle at 85% 80%, var(--lilac) 0, transparent 50%),
+                linear-gradient(160deg, #ffeef4, #ffc9dc);
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    text-align: center;
+  }
+
+  /* falling hearts in the background */
+  .hearts { position: fixed; inset: 0; pointer-events: none; overflow: hidden; }
+  .hearts span {
+    position: absolute; bottom: -40px;
+    color: var(--rose); opacity: .55;
+    animation: rise linear infinite;
+  }
+  @keyframes rise {
+    to { transform: translateY(-115vh) rotate(25deg); opacity: 0; }
+  }
+
+  /* ---------- floating envelope ---------- */
+  .stage { position: relative; z-index: 2; padding: 20px; }
+  .hint {
+    font-family: 'Dancing Script', cursive;
+    font-size: clamp(1.6rem, 5vw, 2.4rem);
+    margin-bottom: 28px;
+  }
+  .envelope-btn {
+    all: unset;
+    cursor: pointer;
+    display: inline-block;
+    animation: float 3.6s ease-in-out infinite;
+  }
+  .envelope-btn:focus-visible { outline: 3px dashed var(--hot); outline-offset: 10px; border-radius: 12px; }
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(-2deg); }
+    50% { transform: translateY(-18px) rotate(2deg); }
+  }
+  .envelope {
+    position: relative;
+    width: min(300px, 72vw);
+    aspect-ratio: 3 / 2;
+    background: linear-gradient(145deg, #ffb3cc, var(--rose));
+    border-radius: 10px;
+    box-shadow: 0 25px 40px rgba(224, 85, 138, .35);
+  }
+  .envelope::before { /* bottom folds */
+    content: ""; position: absolute; inset: 0; border-radius: 10px;
+    background:
+      linear-gradient(to top right, transparent 49.5%, #ff9fbf 50%) left / 50% 100% no-repeat,
+      linear-gradient(to top left, transparent 49.5%, #ff9fbf 50%) right / 50% 100% no-repeat;
+    opacity: .9;
+  }
+  .flap {
+    position: absolute; top: 0; left: 0; width: 100%; height: 55%;
+    background: linear-gradient(180deg, #ff9fbf, #f77ba5);
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    border-radius: 10px 10px 0 0;
+  }
+  .seal {
+    position: absolute; left: 50%; top: 46%;
+    transform: translate(-50%, -50%);
+    width: 52px; height: 52px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #ff7aa8, var(--hot));
+    box-shadow: 0 4px 10px rgba(142, 42, 84, .4);
+    display: grid; place-items: center;
+    color: #fff; font-size: 24px;
+    animation: beat 1.6s ease-in-out infinite;
+  }
+  @keyframes beat { 50% { transform: translate(-50%, -50%) scale(1.12); } }
+
+  /* sparkles around the envelope */
+  .spark { position: absolute; color: var(--gold); font-size: 22px; animation: twinkle 2.2s ease-in-out infinite; }
+  .s1 { top: -22px; left: -26px; }
+  .s2 { top: 10px; right: -34px; animation-delay: .7s; }
+  .s3 { bottom: -18px; left: 20px; animation-delay: 1.3s; }
+  @keyframes twinkle { 0%, 100% { opacity: .2; transform: scale(.7); } 50% { opacity: 1; transform: scale(1.2); } }
+
+  /* ---------- opened letter ---------- */
+  .overlay {
+    position: fixed; inset: 0; z-index: 10;
+    background: rgba(142, 42, 84, .35);
+    backdrop-filter: blur(6px);
+    display: grid; place-items: center;
+    padding: 18px;
+    opacity: 0; visibility: hidden;
+    transition: opacity .4s, visibility .4s;
+  }
+  .overlay.open { opacity: 1; visibility: visible; }
+
+  .letter {
+    position: relative;
+    width: min(560px, 100%);
+    max-height: 88vh;
+    overflow-y: auto;
+    background:
+      repeating-linear-gradient(transparent 0 33px, rgba(247, 143, 179, .25) 33px 34px),
+      var(--cream);
+    border: 3px solid var(--rose);
+    border-radius: 18px;
+    padding: 40px 32px 32px;
+    text-align: left;
+    box-shadow: 0 30px 60px rgba(142, 42, 84, .4);
+    transform: scale(.2) translateY(120px) rotate(-8deg);
+    transition: transform .7s cubic-bezier(.2, 1.2, .3, 1);
+  }
+  .overlay.open .letter { transform: none; }
+
+  .letter h1 {
+    font-family: 'Dancing Script', cursive;
+    font-size: clamp(2rem, 7vw, 2.8rem);
+    color: var(--hot);
+    margin-bottom: 14px;
+  }
+  .letter p { line-height: 34px; font-size: 1.02rem; font-weight: 500; margin-bottom: 34px; }
+  .letter .sign {
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.9rem; color: var(--hot);
+    line-height: 1.3; margin: 0; text-align: right;
+  }
+  .close {
+    position: absolute; top: 10px; right: 12px;
+    width: 38px; height: 38px; border-radius: 50%;
+    border: 0; cursor: pointer;
+    background: var(--blush); color: var(--hot);
+    font-size: 20px; font-weight: 700;
+  }
+  .close:hover { background: var(--rose); color: #fff; }
+  .close:focus-visible { outline: 3px dashed var(--hot); }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition-duration: .01s !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hearts" id="hearts" aria-hidden="true"></div>
+
+<main class="stage">
+  <p class="hint">Hey… you’ve got a letter 💕</p>
+
+  <button class="envelope-btn" id="openBtn" aria-label="Open the letter">
+    <span class="envelope">
+      <span class="flap"></span>
+      <span class="seal">♥</span>
+      <span class="spark s1">✦</span>
+      <span class="spark s2">✦</span>
+      <span class="spark s3">✦</span>
+    </span>
+  </button>
+</main>
+
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="title">
+  <article class="letter">
+    <button class="close" id="closeBtn" aria-label="Close the letter">✕</button>
+
+    <!-- ✏️ EDIT YOUR LETTER HERE -->
+    <h1 id="title">Dear [Pigi],</h1>
+    <p>
+     Oye meri drama pigi! 🥺 Sachhi mafi yaar... maanta hoon maine thoda zyada hi mazaak uda diya aur tumhe pareshan kar diya. Mera bilkul bhi irada tumhe hurt karne ka nahi tha(aacha thoda sa tha 😁), bas tumko pareshaan karne me maja aata hai to 😁(jo ki ab thoda lag raha jyada tha!). 🙈
+    </p>
+    <p>
+      Sach me toh, tumhe bina pareshaan kiye boring lagta hai.Ab naraz na hona 😁 Promise, ab se tumhe tang nahi karoonga... (achha theek hai, thoda kam tang karoonga! 🤭).
+    </p>
+    <p>
+      Ab jaldi se smile karo 🤓!!!
+    </p>
+    <p class="sign">Yours friend,<br>[Vedansh(i)] 🌸</p>
+  </article>
+</div>
+
+<script>
+  const overlay = document.getElementById('overlay');
+  const openBtn = document.getElementById('openBtn');
+  const closeBtn = document.getElementById('closeBtn');
+
+  function openLetter() {
+    overlay.classList.add('open');
+    closeBtn.focus();
+  }
+  function closeLetter() {
+    overlay.classList.remove('open');
+    openBtn.focus();
+  }
+
+  openBtn.addEventListener('click', openLetter);
+  closeBtn.addEventListener('click', closeLetter);
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeLetter(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLetter(); });
+
+  // background hearts
+  const box = document.getElementById('hearts');
+  const symbols = ['♥', '❀', '♡', '✿'];
+  for (let i = 0; i < 22; i++) {
+    const s = document.createElement('span');
+    s.textContent = symbols[i % symbols.length];
+    s.style.left = Math.random() * 100 + '%';
+    s.style.fontSize = 14 + Math.random() * 26 + 'px';
+    s.style.animationDuration = 9 + Math.random() * 10 + 's';
+    s.style.animationDelay = -Math.random() * 15 + 's';
+    box.appendChild(s);
+  }
+</script>
+</body>
+</html>
